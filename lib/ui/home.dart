@@ -67,14 +67,6 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _handleLogout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-
-    if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed('/signin');
-  }
-
   void filterTodos() {
     List<Todo> filtered = List.from(todos);
 
@@ -114,13 +106,11 @@ class HomeScreenState extends State<HomeScreen> {
     final newTodo = await TodoService.addTodo(title, description, deadline);
     if (newTodo != null) {
       setState(() {
+        todos.add(newTodo);
         isAddTodoOpen = false;
-      });
-      final fetchedTodos = await TodoService.fetchTodos();
-      setState(() {
-        todos = fetchedTodos;
         filterTodos();
       });
+     await fetchTodos();
     }
   }
 
@@ -536,7 +526,6 @@ class HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         ),
-                      const SizedBox(height: 80), // Bottom padding for FAB
                     ],
                   ),
                 ),
