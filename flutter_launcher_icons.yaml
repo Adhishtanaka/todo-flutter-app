@@ -1,0 +1,9 @@
+flutter_launcher_icons:
+  image_path: "assets/icon/logo.png"
+  android: "launcher_icon"
+  image_path_android: "assets/icon/logo.png"
+  min_sdk_android: 21
+
+  ios: true
+  image_path_ios: "assets/icon/logo.png"
+  remove_alpha_channel_ios: true
