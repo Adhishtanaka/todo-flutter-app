@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -65,6 +66,13 @@ class SignInScreenState extends State<SignInScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _launchURL() async {
+    final url = Uri.parse('https://thetodaytodo.netlify.app/auth/signup'); // Replace with your URL
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -253,9 +261,7 @@ class SignInScreenState extends State<SignInScreen> {
                         const TextSpan(text: "Don't have an account? "),
                         WidgetSpan(
                           child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pushReplacementNamed('/signup');
-                            },
+                            onTap: _launchURL,
                             child: const Text(
                               'Sign up',
                               style: TextStyle(
