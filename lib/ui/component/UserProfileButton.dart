@@ -43,8 +43,7 @@ class _UserProfileButtonState extends State<UserProfileButton> {
         'https://thetodaytodo.netlify.app/api/auth',
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
+            'Cookie': 'token=$token',
           },
         ),
       );
