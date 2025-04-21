@@ -20,7 +20,6 @@ class HomeScreenState extends State<HomeScreen> {
   List<Todo> filteredTodos = [];
   bool isLoading = true;
   String searchTerm = '';
-  DateTime? dateFilter;
   bool isAddTodoOpen = false;
   final TextEditingController _searchController = TextEditingController();
 
@@ -28,7 +27,6 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _checkAuth();
-    dateFilter = null;
     fetchTodos();
   }
 
@@ -76,14 +74,6 @@ class HomeScreenState extends State<HomeScreen> {
           filtered.where((todo) {
             return todo.title.toLowerCase().contains(term) ||
                 (todo.description?.toLowerCase().contains(term) ?? false);
-          }).toList();
-    }
-
-    if (dateFilter != null) {
-      filtered =
-          filtered.where((todo) {
-            if (todo.createdAt == null) return false;
-            return _isSameDay(todo.createdAt!, dateFilter!);
           }).toList();
     }
 
@@ -140,29 +130,11 @@ class HomeScreenState extends State<HomeScreen> {
   void clearFilters() {
     setState(() {
       searchTerm = '';
-      dateFilter = null;
       _searchController.clear();
     });
     filterTodos();
   }
-
-  void _showDatePicker() async {
-    final now = DateTime.now();
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: dateFilter ?? now,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(now.year + 1, 12, 31),
-    );
-
-    if (picked != null) {
-      setState(() {
-        dateFilter = picked;
-      });
-      filterTodos();
-    }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -182,21 +154,6 @@ class HomeScreenState extends State<HomeScreen> {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         actions: [
-          // Filter button
-          if (dateFilter != null)
-            IconButton(
-              icon: const Icon(Icons.filter_list_off, size: 22),
-              tooltip: 'Clear date filter',
-              onPressed: () {
-                setState(() {
-                  dateFilter = null;
-                });
-                filterTodos();
-              },
-            ),
-          // Date picker button
-
-          // Profile button
           UserProfileButton()
         ],
       ),
@@ -275,29 +232,11 @@ class HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.calendar_today,
-                                  size: 22,
-                                  color:
-                                      dateFilter != null
-                                          ? Theme.of(
-                                            context,
-                                          ).colorScheme.primary
-                                          : null,
-                                ),
-                                tooltip:
-                                    dateFilter != null
-                                        ? 'Filter: ${DateFormat('MM/dd').format(dateFilter!)}'
-                                        : 'Filter by date',
-                                onPressed: _showDatePicker,
-                              ),
                             ],
                           ),
                         ),
                       ),
 
-                      // Add Todo Button
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 4.0,
@@ -419,7 +358,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ),
 
                       // Filter chips
-                      if (searchTerm.isNotEmpty || dateFilter != null)
+                      if (searchTerm.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8.0,
@@ -439,26 +378,6 @@ class HomeScreenState extends State<HomeScreen> {
                                     setState(() {
                                       searchTerm = '';
                                       _searchController.clear();
-                                    });
-                                    filterTodos();
-                                  },
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.surface,
-                                  padding: const EdgeInsets.all(0),
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                              if (dateFilter != null)
-                                Chip(
-                                  label: Text(
-                                    DateFormat(
-                                      'MM/dd/yyyy',
-                                    ).format(dateFilter!),
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  deleteIcon: const Icon(Icons.close, size: 16),
-                                  onDeleted: () {
-                                    setState(() {
-                                      dateFilter = null;
                                     });
                                     filterTodos();
                                   },
